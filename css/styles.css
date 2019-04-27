@@ -14,9 +14,27 @@ p:hover, h1:hover {
   opacity: 1;
 }
 
+.clickable {
+  transition: font-size 0.5s ease-in-out;
+}
+
+p.clickable:hover {
+  font-size: 1.2em;
+}
+
+h1.clickable:hover {
+  font-size: 2.1em;
+}
+
+.clickable-text:active {
+  color: gray;
+}
+
 #app-main-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100vh;
+  width: 100vw;
 }

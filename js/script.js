@@ -1,7 +1,13 @@
 'use strict';
 
-setTimeout(function() {
-  $.get("html/introPage.html", function(page) {
-    $('#app-main-wrapper').html(page);
-  })
-}, 2000);
+function transitionContentTo(htmlContent) {
+  $('#app-main-wrapper').fadeOut(500, function() {
+    $(this).html(htmlContent).fadeIn(500);
+  });
+};
+
+function transitionToPage(pageFileName) {
+  $.get(pageFileName, function(page) {
+    transitionContentTo(page);
+  });
+};
