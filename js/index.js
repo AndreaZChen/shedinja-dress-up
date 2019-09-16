@@ -66,4 +66,5 @@ function preloadImages(images) {
 preloadImages([
   "./assets/volume_active.svg",
   "./assets/shedinja.png",
+  "./assets/tiara.png",
 ]);
