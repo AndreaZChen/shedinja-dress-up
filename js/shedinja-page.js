@@ -1,5 +1,9 @@
 'use strict';
 
+function clamp(num, min, max) {
+  return Math.max(min, Math.min(num, max));
+}
+
 $("#click-to-continue-text").on("click", function() {
   transitionToPage("./pages/page2.html");
 });
@@ -26,6 +30,15 @@ $(document).on("mousemove", function(event) {
     event.preventDefault();
     let newX = currentDraggedItemX + event.clientX - currentOffsetX;
     let newY = currentDraggedItemY + event.clientY - currentOffsetY;
+
+    let currentDraggedItemWidth = parseInt(draggedElement.css("width"));
+    let currentDraggedItemHeight = parseInt(draggedElement.css("height"));
+    let viewportWidth = $(window).width();
+    let viewportHeight = $(window).height();
+
+    newX = clamp(newX, 0, viewportWidth - currentDraggedItemWidth);
+    newY = clamp(newY, 0, viewportHeight - currentDraggedItemHeight);
+
     draggedElement
       .css("left", newX.toString() + "px")
       .css("top", newY.toString() + "px");
