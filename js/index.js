@@ -36,20 +36,18 @@ $("#mute-button-div").on("click", function () {
   const player = $("#audio-player");
   const isPlaying = player.data("isPlaying");
   var clickedElement = $(this);
-  console.log(this);
-  console.log(clickedElement);
   if (isPlaying) {
     player.trigger("pause");
     player.data("isPlaying", false);
     clickedElement.html(
-      `<img class="icon" src="./assets/volume_inactive.svg">
+      `<img draggable=false class="clickable" src="./assets/volume_inactive.svg">
       </img>`
     );
   } else {
     player.trigger("play");
     player.data("isPlaying", true);
     clickedElement.html(
-      `<img class="icon" src="./assets/volume_active.svg">
+      `<img draggable=false class="clickable" src="./assets/volume_active.svg">
       </img>`
     );
   };

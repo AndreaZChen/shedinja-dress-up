@@ -4,6 +4,7 @@ body {
   font-family: "Cookie", Helvetica, sans-serif;
   font-size: 2em;
   margin: 0;
+  overflow: hidden;
 }
 
 p, h1 {
@@ -15,6 +16,7 @@ p:hover, h1:hover {
   opacity: 1;
 }
 
+.clickable
 .clickable-text {
   cursor: pointer;
 }
