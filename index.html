@@ -5,21 +5,31 @@
   <title>Andrea's Fun GitHub Pages Test</title>
   <meta name="author" content="Andrea Z Chen">
 
-  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  <link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+  <link rel="shortcut icon" type="image/png" href="./favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="./css/styles.css">
 
 </head>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-<script src="js/script.js"></script>
 
 <body>
-  <div id="app-main-wrapper">
-    <h1 class="clickable">
-      <a href="https://andreazchen.github.io/drake-forcefield/">
-        Click here to see the Drake Forcefield.
-      </a>
-    </h1>
+  <audio id="audio-player" loop src="./assets/tchaikovsky_dance_of_the_reed_pipes.mp3">
+    <p>Unable to play audio, which is probably just as well.</p>
+  </audio>
+  <div id="mute-button-div">
+    <img class="icon" src="./assets/volume_inactive.svg">
+    </img>
+  </div>
+  <div id="app-content-display-area">
+    <div id="index-page-content">
+      <h1 class="clickable wobbling-text" id="click-to-begin-text">
+        BEGIN
+      </h1>
+    </div>
   </div>
 </body>
+
+<script src="./js/index.js"></script>
+
 </html>
