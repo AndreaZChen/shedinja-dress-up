@@ -77,8 +77,8 @@ function onDrag (event) {
 $(document).on("mousemove.dragdrop", onDrag);
 $(document).on("touchmove.dragdrop", onDrag);
 
-const tiaraTargetX = [-130, -50];
-const tiaraTargetY = [-150, -70];
+const tiaraTargetPercentX = [-0.27, -0.1];
+const tiaraTargetPercentY = [-0.31, -0.15];
 
 const shedinjaPositiveDialogue = [
   "Thanks!",
@@ -122,8 +122,9 @@ function makeShedinjaSpeak (isHappy) {
     parseInt(shedinja.css("top"))
     + 0.3 * shedinja.height();
 
-  let leftValue = shedinjaHeadX + (Math.random() - 0.5) * 50;
-  let topValue = shedinjaHeadY - Math.random() * 70;
+  // Heuristically good values for positioning Shedinja's speech bubbles
+  let leftValue = shedinjaHeadX + (Math.random() - 0.5) * shedinja.width() * 0.1;
+  let topValue = shedinjaHeadY - Math.random() * shedinja.height() * 0.15;
 
   let newSpanElement = $(`
     <span class="shedinja-spoken-words">${words}</span>
@@ -145,10 +146,10 @@ function onDragEnd (event) {
     if (draggedElement.attr("id") === "tiara") {
       // Check if sufficiently close to Shedinja's beautiful head
       var shedinja = $("#shedinja");
-      let shedinjaX =
+      let shedinjaCenterX =
         parseInt(shedinja.css("left"))
         + shedinja.width() / 2;
-      let shedinjaY =
+      let shedinjaCenterY =
         parseInt(shedinja.css("top"))
         + shedinja.height() / 2;
       let currentDraggedItemCenterX =
@@ -158,10 +159,13 @@ function onDragEnd (event) {
         parseInt(draggedElement.css("top"))
         + draggedElement.height() / 2;
 
-      if ((currentDraggedItemCenterX - shedinjaX > tiaraTargetX[0])
-          && (currentDraggedItemCenterX - shedinjaX < tiaraTargetX[1])
-          && (currentDraggedItemCenterY - shedinjaY > tiaraTargetY[0])
-          && (currentDraggedItemCenterY - shedinjaY < tiaraTargetY[1])) {
+      let percentOffsetX = (currentDraggedItemCenterX - shedinjaCenterX) / shedinja.width();
+      let percentOffsetY = (currentDraggedItemCenterY - shedinjaCenterY) / shedinja.height();
+
+      if ((percentOffsetX > tiaraTargetPercentX[0])
+          && (percentOffsetX < tiaraTargetPercentX[1])
+          && (percentOffsetY > tiaraTargetPercentY[0])
+          && (percentOffsetY < tiaraTargetPercentY[1])) {
         makeShedinjaSpeak(true);
         draggedElement.attr("draggable", false);
         draggedElement.toggleClass("draggable-accessory", false);

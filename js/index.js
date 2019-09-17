@@ -10,18 +10,27 @@ var isTransitioning = false;
 
 function transitionToPage(pageFileName, scriptFileName) {
   if (!isTransitioning) {
+    let contentDisplayArea = $('#app-content-display-area');
     isTransitioning = true;
     $.get(pageFileName, function(page) {
-      $('#app-content-display-area').fadeOut(500, function() {
-        $(this).html(page).fadeIn(500, function() {
-          isTransitioning = false;
-        });
+      contentDisplayArea.fadeOut(500, function() {
+        contentDisplayArea.html(page);
+
         if (scriptFileName) {
-          $.getScript(scriptFileName)
+          // If there is a script to load, don't fade in until script has executed
+          $.getScript(scriptFileName, function() {
+            contentDisplayArea.fadeIn(500, function() {
+              isTransitioning = false;
+            });
+          })
             .fail(function (jqxhr, settings, exception) {
               console.log(exception);
             })
-        };
+        } else {
+          contentDisplayArea.fadeIn(500, function() {
+            isTransitioning = false;
+          });
+        }
       });
     })
     .fail(function (jqxhr, settings, exception) {

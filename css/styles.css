@@ -69,11 +69,7 @@ p:hover, h1:hover {
 }
 
 @media (max-width : 500px) {
-  body {
-    font-size: 3em;
-  }
-
   #mute-button-div > img {
-    width: 100px;
+    width: 50px;
   }
 }
