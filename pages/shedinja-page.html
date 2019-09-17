@@ -1,4 +1,31 @@
 <style>
+  :root {
+    --shedinja-vibrate-animation-length: 12s;
+  }
+  @keyframes shedinja-vibrate {
+    0% {
+      transform: translateX(0) translateY(0);
+    }
+    50%, 52%, 54%, 56%, 58%, 60% {
+      transform: translateY(2px);
+    }
+    51%, 53%, 55%, 57%, 59% {
+      transform: translateY(-2px);
+    }
+    61% {
+      transform: translateY(0);
+    }
+    89% {
+      transform: translateX(0);
+    }
+    90%, 92%, 94%, 96%, 98%, 100% {
+      transform: translateX(-2px);
+    }
+    91%, 93%, 95%, 97%, 99% {
+      transform: translateX(2px);
+    }
+  }
+
   #shedinja {
     position: absolute;
     top: calc(50% - 237.5px);
@@ -6,6 +33,10 @@
     height: 475px;
     width: 475px;
     z-index: -1;
+  }
+
+  .animating {
+    animation: shedinja-vibrate var(--shedinja-vibrate-animation-length) linear infinite;
   }
 
   #tiara {
@@ -68,13 +99,9 @@
   .accessory.shrunk {
     transform: scale(0.75);
   }
-
-  .accessory.pulsating {
-    animation: pulsate-with-power 3s infinite ease-in-out;
-  }
 </style>
 
-<img draggable=false id="shedinja" src="../assets/shedinja.png" ></img>
+<img draggable=false id="shedinja" class="animating" src="../assets/shedinja.png" ></img>
 <img
   draggable=true
   id="tiara"

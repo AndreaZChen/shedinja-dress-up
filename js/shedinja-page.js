@@ -47,6 +47,9 @@ function onStartDrag (event) {
   draggedElement = $(this);
   draggedElement.toggleClass("shrunk", false);
 
+  $(".attached.accessory").toggleClass("animating", false);
+  $("#shedinja").toggleClass("animating", false);
+
   if (event.touches) {
     initialOffsetX = event.touches[0].clientX;
     initialOffsetY = event.touches[0].clientY;
@@ -187,13 +190,15 @@ function onDragEnd (event) {
     if (wasSuccessful) {
       draggedElement.toggleClass("shrunk", false);
       draggedElement.toggleClass("draggable", false);
+      draggedElement.toggleClass("attached", true);
       draggedElement.attr("draggable", false);
-      draggedElement.toggleClass("pulsating", true);
       draggedElement.off(".dragdrop");
     } else {
       draggedElement.toggleClass("shrunk", true);
     }
 
+    $(".attached.accessory").toggleClass("animating", true);
+    shedinja.toggleClass("animating", true);
     draggedElement = null;
   }
 };
