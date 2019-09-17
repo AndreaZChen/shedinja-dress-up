@@ -4,6 +4,17 @@ function clamp(num, min, max) {
   return Math.max(min, Math.min(num, max));
 }
 
+// Center Shedinja on load only. I can't be bothered to do it better than that right now.
+function centerShedinja() {
+  var shedinja = $("#shedinja");
+
+  shedinja
+    .css("left", (($(window).width() - shedinja.width()) / 2).toString() + "px")
+    .css("top", (($(window).height() - shedinja.height()) / 2).toString() + "px");
+}
+
+centerShedinja();
+
 $("#click-to-continue-text").on("click", function() {
   transitionToPage("./pages/page2.html");
 });
@@ -15,14 +26,16 @@ let initialDraggedItemX = 0;
 let initialDraggedItemY = 0;
 
 function onStartDrag (event) {
-  // console.log("onStartDrag event");
-  // console.log(event);
-
   event.preventDefault();
   draggedElement = $(this);
 
-  initialOffsetX = event.clientX;
-  initialOffsetY = event.clientY;
+  if (event.touches) {
+    initialOffsetX = event.touches[0].clientX;
+    initialOffsetY = event.touches[0].clientY;
+  } else {
+    initialOffsetX = event.clientX;
+    initialOffsetY = event.clientY;
+  };
 
   initialDraggedItemX = parseInt(draggedElement.css("left"));
   initialDraggedItemY = parseInt(draggedElement.css("top"));
@@ -31,11 +44,21 @@ function onStartDrag (event) {
 $(".draggable-accessory").on("mousedown.dragdrop", onStartDrag);
 $(".draggable-accessory").on("touchstart.dragdrop", onStartDrag);
 
-$(document).on("mousemove.dragdrop", function(event) {
+function onDrag (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
-    let newX = initialDraggedItemX + event.clientX - initialOffsetX;
-    let newY = initialDraggedItemY + event.clientY - initialOffsetY;
+    var eventX;
+    var eventY;
+    if (event.touches) {
+      eventX = event.touches[0].clientX;
+      eventY = event.touches[0].clientY;
+    } else {
+      eventX = event.clientX;
+      eventY = event.clientY;
+    };
+
+    let newX = initialDraggedItemX + eventX - initialOffsetX;
+    let newY = initialDraggedItemY + eventY - initialOffsetY;
 
     let currentDraggedItemWidth = parseInt(draggedElement.css("width"));
     let currentDraggedItemHeight = parseInt(draggedElement.css("height"));
@@ -49,7 +72,10 @@ $(document).on("mousemove.dragdrop", function(event) {
       .css("left", newX.toString() + "px")
       .css("top", newY.toString() + "px");
   };
-})
+}
+
+$(document).on("mousemove.dragdrop", onDrag);
+$(document).on("touchmove.dragdrop", onDrag);
 
 const tiaraTargetX = [-130, -50];
 const tiaraTargetY = [-150, -70];
@@ -91,13 +117,13 @@ function makeShedinjaSpeak (isHappy) {
   let shedinja = $("#shedinja");
   let shedinjaHeadX =
     parseInt(shedinja.css("left"))
-    - 0.25 * shedinja.width();
+    + 0.25 * shedinja.width();
   let shedinjaHeadY =
     parseInt(shedinja.css("top"))
-    - 0.5 * shedinja.height();
+    + 0.3 * shedinja.height();
 
   let leftValue = shedinjaHeadX + (Math.random() - 0.5) * 50;
-  let topValue = shedinjaHeadY + Math.random() * 70;
+  let topValue = shedinjaHeadY - Math.random() * 70;
 
   let newSpanElement = $(`
     <span class="shedinja-spoken-words">${words}</span>
@@ -112,15 +138,19 @@ function makeShedinjaSpeak (isHappy) {
   });
 }
 
-$(document).on("mouseup.dragdrop", function(event) {
+function onDragEnd (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
 
     if (draggedElement.attr("id") === "tiara") {
       // Check if sufficiently close to Shedinja's beautiful head
       var shedinja = $("#shedinja");
-      let shedinjaX = parseInt(shedinja.css("left"));
-      let shedinjaY = parseInt(shedinja.css("top"));
+      let shedinjaX =
+        parseInt(shedinja.css("left"))
+        + shedinja.width() / 2;
+      let shedinjaY =
+        parseInt(shedinja.css("top"))
+        + shedinja.height() / 2;
       let currentDraggedItemCenterX =
         parseInt(draggedElement.css("left"))
         + draggedElement.width() / 2;
@@ -144,4 +174,7 @@ $(document).on("mouseup.dragdrop", function(event) {
 
     draggedElement = null;
   }
-})
+};
+
+$(document).on("mouseup.dragdrop", onDragEnd);
+$(document).on("touchend.dragdrop", onDragEnd);

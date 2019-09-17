@@ -1,17 +1,18 @@
 <style>
   #shedinja {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: calc(50% - 237.5px);
+    left: calc(50% - 237.5px);
     height: 475px;
     width: 475px;
-    transform: translateX(-50%) translateY(-50%);
     z-index: -1;
   }
 
   #tiara {
     width: 300px;
     position: absolute;
+    left: 25px;
+    top: calc(90% - 200px);
   }
 
   @keyframes rise-upwards {
@@ -47,6 +48,10 @@
     color: black;
     border-radius: 10px;
     padding: 4px;
+  }
+
+  .draggable-accessory {
+    touch-action: none;
   }
 </style>
 

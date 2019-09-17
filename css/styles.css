@@ -67,3 +67,13 @@ p:hover, h1:hover {
   top: 25px;
   z-index: 1000;
 }
+
+@media (max-width : 500px) {
+  body {
+    font-size: 3em;
+  }
+
+  #mute-button-div > img {
+    width: 100px;
+  }
+}
