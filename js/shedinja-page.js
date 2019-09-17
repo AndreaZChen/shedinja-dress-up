@@ -15,8 +15,8 @@ let initialDraggedItemX = 0;
 let initialDraggedItemY = 0;
 
 function onStartDrag (event) {
-  console.log("onStartDrag event");
-  console.log(event);
+  // console.log("onStartDrag event");
+  // console.log(event);
 
   event.preventDefault();
   draggedElement = $(this);
@@ -28,10 +28,10 @@ function onStartDrag (event) {
   initialDraggedItemY = parseInt(draggedElement.css("top"));
 };
 
-$(".draggable-accessory").on("mousedown", onStartDrag);
-$(".draggable-accessory").on("touchstart", onStartDrag);
+$(".draggable-accessory").on("mousedown.dragdrop", onStartDrag);
+$(".draggable-accessory").on("touchstart.dragdrop", onStartDrag);
 
-$(document).on("mousemove", function(event) {
+$(document).on("mousemove.dragdrop", function(event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
     let newX = initialDraggedItemX + event.clientX - initialOffsetX;
@@ -112,7 +112,7 @@ function makeShedinjaSpeak (isHappy) {
   });
 }
 
-$(document).on("mouseup", function(event) {
+$(document).on("mouseup.dragdrop", function(event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
 
@@ -133,8 +133,10 @@ $(document).on("mouseup", function(event) {
           && (currentDraggedItemCenterY - shedinjaY > tiaraTargetY[0])
           && (currentDraggedItemCenterY - shedinjaY < tiaraTargetY[1])) {
         makeShedinjaSpeak(true);
-        // draggedElement.attr("draggable", false);
-        // draggedElement.toggleClass("draggable-accessory", false);
+        draggedElement.attr("draggable", false);
+        draggedElement.toggleClass("draggable-accessory", false);
+        draggedElement.toggleClass("pulsating-accessory", true);
+        draggedElement.off(".dragdrop");
       } else {
         makeShedinjaSpeak(false);
       }

@@ -23,6 +23,22 @@
     }
   }
 
+  @keyframes pulsate-with-power {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .pulsating-accessory {
+    animation: pulsate-with-power 3s infinite ease-in-out;
+  }
+
   .shedinja-spoken-words {
     position: absolute;
     animation: rise-upwards 2s linear;
