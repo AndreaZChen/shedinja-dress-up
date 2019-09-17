@@ -1,7 +1,10 @@
 <style>
   :root {
-    --shedinja-vibrate-animation-length: 12s;
+    --shedinja-height-and-width: 475px;
+    --tiara-width: 300px;
+    --necktie-height: 150px;
   }
+
   @keyframes shedinja-vibrate {
     0% {
       transform: translateX(0) translateY(0);
@@ -30,33 +33,45 @@
     position: absolute;
     top: calc(50% - 237.5px);
     left: calc(50% - 237.5px);
-    height: 475px;
-    width: 475px;
+    height: var(--shedinja-height-and-width);
+    width: var(--shedinja-height-and-width);
     z-index: -1;
   }
 
   .animating {
-    animation: shedinja-vibrate var(--shedinja-vibrate-animation-length) linear infinite;
+    animation: shedinja-vibrate 12s linear infinite;
   }
 
   #tiara {
-    width: 300px;
+    width: var(--tiara-width);
     position: absolute;
     left: 25px;
     top: calc(90% - 200px);
   }
 
+  #necktie {
+    height: var(--necktie-height);
+    position: absolute;
+    left: calc(100% - 175px);
+    top: 50%;
+  }
+
   @media (max-width : 500px) {
     #shedinja {
-      height: 237.5px;
-      width: 237.5px;
+      height: calc(var(--shedinja-height-and-width) / 2);
+      width: calc(var(--shedinja-height-and-width) / 2);
     }
 
     #tiara {
-      width: 150px;
-      position: absolute;
+      width: calc(var(--tiara-width) / 2);
       left: 25px;
-      top: calc(90% - 200px);
+      top: calc(90% - 100px);
+    }
+
+    #necktie {
+      height: calc(var(--necktie-height) / 2);
+      left: calc(100% - 90px);
+      top: 50%;
     }
   }
 
@@ -66,18 +81,6 @@
     }
     100% {
       transform: translateY(-100px);
-    }
-  }
-
-  @keyframes pulsate-with-power {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
-    100% {
-      transform: scale(1);
     }
   }
 
@@ -93,7 +96,6 @@
 
   .accessory {
     transition: transform 0.3s;
-    touch-action: none;
   }
 
   .accessory.shrunk {
@@ -101,11 +103,17 @@
   }
 </style>
 
-<img draggable=false id="shedinja" class="animating" src="../assets/shedinja.png" ></img>
+<img draggable=false id="shedinja" class="animating unselectable" src="../assets/shedinja.png" ></img>
 <img
   draggable=true
   id="tiara"
-  class="accessory draggable shrunk"
+  class="accessory draggable shrunk unselectable"
   src="../assets/tiara.png"
+>
+<img
+  draggable=true
+  id="necktie"
+  class="accessory draggable shrunk unselectable"
+  src="../assets/necktie.png"
 >
 </img>
