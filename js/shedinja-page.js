@@ -4,16 +4,33 @@ function clamp(num, min, max) {
   return Math.max(min, Math.min(num, max));
 }
 
-// Center Shedinja on load only. I can't be bothered to do it better than that right now.
-function centerShedinja() {
+function repositionShedinjaAndAccessories() {
   var shedinja = $("#shedinja");
+  var accessories = $(".accessory");
+
+  let shedinjaOldX = parseInt(shedinja.css("left"));
+  let shedinjaOldY = parseInt(shedinja.css("top"));
 
   shedinja
     .css("left", (($(window).width() - shedinja.width()) / 2).toString() + "px")
     .css("top", (($(window).height() - shedinja.height()) / 2).toString() + "px");
+
+  let diffX = parseInt(shedinja.css("left")) - shedinjaOldX;
+  let diffY = parseInt(shedinja.css("top")) - shedinjaOldY;
+
+  accessories.each(function () {
+    let element = $(this);
+    let elementOldX = parseInt(element.css("left"));
+    let elementOldY = parseInt(element.css("top"));
+    element
+      .css("left", (elementOldX + diffX).toString() + "px")
+      .css("top", (elementOldY + diffY).toString() + "px");
+  });
 }
 
-centerShedinja();
+repositionShedinjaAndAccessories();
+
+$(window).on("resize.dragdrop", repositionShedinjaAndAccessories);
 
 $("#click-to-continue-text").on("click", function() {
   transitionToPage("./pages/page2.html");
@@ -28,6 +45,7 @@ let initialDraggedItemY = 0;
 function onStartDrag (event) {
   event.preventDefault();
   draggedElement = $(this);
+  draggedElement.toggleClass("shrunk", false);
 
   if (event.touches) {
     initialOffsetX = event.touches[0].clientX;
@@ -41,8 +59,8 @@ function onStartDrag (event) {
   initialDraggedItemY = parseInt(draggedElement.css("top"));
 };
 
-$(".draggable-accessory").on("mousedown.dragdrop", onStartDrag);
-$(".draggable-accessory").on("touchstart.dragdrop", onStartDrag);
+$(".draggable.accessory").on("mousedown.dragdrop", onStartDrag);
+$(".draggable.accessory").on("touchstart.dragdrop", onStartDrag);
 
 function onDrag (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
@@ -92,7 +110,7 @@ const shedinjaPositiveDialogue = [
 
 const shedinjaNegativeDialogue = [
   "Wrong spot...",
-  "Move it closer...",
+  "Move it somewhere else...",
   "Can you try harder...?",
   "Are you sure...?",
   "That's not where that goes...",
@@ -143,37 +161,37 @@ function onDragEnd (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
 
+    // Check if sufficiently close to Shedinja's beautiful head
+    var shedinja = $("#shedinja");
+    let shedinjaCenterX =
+      parseInt(shedinja.css("left"))
+      + shedinja.width() / 2;
+    let shedinjaCenterY =
+      parseInt(shedinja.css("top"))
+      + shedinja.height() / 2;
+    let currentDraggedItemCenterX =
+      parseInt(draggedElement.css("left"))
+      + draggedElement.width() / 2;
+    let currentDraggedItemCenterY =
+      parseInt(draggedElement.css("top"))
+      + draggedElement.height() / 2;
+
+    let percentOffsetX = (currentDraggedItemCenterX - shedinjaCenterX) / shedinja.width();
+    let percentOffsetY = (currentDraggedItemCenterY - shedinjaCenterY) / shedinja.height();
+
+    var wasSuccessful;
     if (draggedElement.attr("id") === "tiara") {
-      // Check if sufficiently close to Shedinja's beautiful head
-      var shedinja = $("#shedinja");
-      let shedinjaCenterX =
-        parseInt(shedinja.css("left"))
-        + shedinja.width() / 2;
-      let shedinjaCenterY =
-        parseInt(shedinja.css("top"))
-        + shedinja.height() / 2;
-      let currentDraggedItemCenterX =
-        parseInt(draggedElement.css("left"))
-        + draggedElement.width() / 2;
-      let currentDraggedItemCenterY =
-        parseInt(draggedElement.css("top"))
-        + draggedElement.height() / 2;
+      wasSuccessful = onTiaraDropped(percentOffsetX, percentOffsetY);
+    }
 
-      let percentOffsetX = (currentDraggedItemCenterX - shedinjaCenterX) / shedinja.width();
-      let percentOffsetY = (currentDraggedItemCenterY - shedinjaCenterY) / shedinja.height();
-
-      if ((percentOffsetX > tiaraTargetPercentX[0])
-          && (percentOffsetX < tiaraTargetPercentX[1])
-          && (percentOffsetY > tiaraTargetPercentY[0])
-          && (percentOffsetY < tiaraTargetPercentY[1])) {
-        makeShedinjaSpeak(true);
-        draggedElement.attr("draggable", false);
-        draggedElement.toggleClass("draggable-accessory", false);
-        draggedElement.toggleClass("pulsating-accessory", true);
-        draggedElement.off(".dragdrop");
-      } else {
-        makeShedinjaSpeak(false);
-      }
+    if (wasSuccessful) {
+      draggedElement.toggleClass("shrunk", false);
+      draggedElement.toggleClass("draggable", false);
+      draggedElement.attr("draggable", false);
+      draggedElement.toggleClass("pulsating", true);
+      draggedElement.off(".dragdrop");
+    } else {
+      draggedElement.toggleClass("shrunk", true);
     }
 
     draggedElement = null;
@@ -182,3 +200,16 @@ function onDragEnd (event) {
 
 $(document).on("mouseup.dragdrop", onDragEnd);
 $(document).on("touchend.dragdrop", onDragEnd);
+
+function onTiaraDropped(percentOffsetX, percentOffsetY) {
+  if ((percentOffsetX > tiaraTargetPercentX[0])
+      && (percentOffsetX < tiaraTargetPercentX[1])
+      && (percentOffsetY > tiaraTargetPercentY[0])
+      && (percentOffsetY < tiaraTargetPercentY[1])) {
+    makeShedinjaSpeak(true);
+    return true;
+  } else {
+    makeShedinjaSpeak(false);
+    return false;
+  }
+}

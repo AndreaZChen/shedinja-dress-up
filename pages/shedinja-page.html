@@ -50,10 +50,6 @@
     }
   }
 
-  .pulsating-accessory {
-    animation: pulsate-with-power 3s infinite ease-in-out;
-  }
-
   .shedinja-spoken-words {
     position: absolute;
     animation: rise-upwards 2s linear;
@@ -64,8 +60,17 @@
     padding: 4px;
   }
 
-  .draggable-accessory {
+  .accessory {
+    transition: transform 0.3s;
     touch-action: none;
+  }
+
+  .accessory.shrunk {
+    transform: scale(0.75);
+  }
+
+  .accessory.pulsating {
+    animation: pulsate-with-power 3s infinite ease-in-out;
   }
 </style>
 
@@ -73,7 +78,7 @@
 <img
   draggable=true
   id="tiara"
-  class="draggable-accessory"
+  class="accessory draggable shrunk"
   src="../assets/tiara.png"
 >
 </img>
