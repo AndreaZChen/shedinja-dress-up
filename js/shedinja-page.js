@@ -7,8 +7,8 @@ function clamp(num, min, max) {
 var previousShedinjaWidth = null;
 var previousShedinjaHeight = null;
 function repositionShedinjaAndAccessories() {
-  var shedinja = $("#shedinja");
-  var accessories = $(".accessory");
+  let shedinja = $("#shedinja");
+  let accessories = $(".accessory");
 
   let shedinjaOldX = parseInt(shedinja.css("left"));
   let shedinjaOldY = parseInt(shedinja.css("top"));
@@ -70,10 +70,10 @@ $("#click-to-continue-text").on("click", function() {
 });
 
 var draggedElement = null;
-let initialOffsetX = 0;
-let initialOffsetY = 0;
-let initialDraggedItemX = 0;
-let initialDraggedItemY = 0;
+var initialOffsetX = 0;
+var initialOffsetY = 0;
+var initialDraggedItemX = 0;
+var initialDraggedItemY = 0;
 
 function onStartDrag (event) {
   event.preventDefault();
@@ -101,8 +101,8 @@ $(".draggable.accessory").on("touchstart.dragdrop", onStartDrag);
 function onDrag (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
-    var eventX;
-    var eventY;
+    let eventX;
+    let eventY;
     if (event.touches) {
       eventX = event.touches[0].clientX;
       eventY = event.touches[0].clientY;
@@ -195,7 +195,7 @@ function onDragEnd (event) {
     event.preventDefault();
 
     // Check if sufficiently close to Shedinja's beautiful head
-    var shedinja = $("#shedinja");
+    let shedinja = $("#shedinja");
     let shedinjaCenterX =
       parseInt(shedinja.css("left"))
       + shedinja.width() / 2;
@@ -212,7 +212,7 @@ function onDragEnd (event) {
     let percentOffsetX = (currentDraggedItemCenterX - shedinjaCenterX) / shedinja.width();
     let percentOffsetY = (currentDraggedItemCenterY - shedinjaCenterY) / shedinja.height();
 
-    var wasSuccessful;
+    let wasSuccessful;
     if (draggedElement.attr("id") === "tiara") {
       wasSuccessful = onTiaraDropped(percentOffsetX, percentOffsetY);
     }
