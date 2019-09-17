@@ -86,6 +86,8 @@ function onStartDrag (event) {
   event.preventDefault();
   draggedElement = $(this);
   draggedElement.toggleClass("shrunk", false);
+  $(".most-recent-dragged").toggleClass("most-recent-dragged", false);
+  draggedElement.toggleClass("most-recent-dragged", true);
 
   $(".attached.accessory").toggleClass("animating", false);
   $("#shedinja").toggleClass("animating", false);
@@ -226,13 +228,18 @@ function onDragEnd (event) {
     else if (draggedElement.attr("id") === "necktie") {
       wasSuccessful = onNecktieDropped(percentOffsetX, percentOffsetY);
     }
+    else if (draggedElement.attr("id") === "croc") {
+      wasSuccessful = onCrocDropped(percentOffsetX, percentOffsetY);
+    }
 
     if (wasSuccessful) {
-      draggedElement.toggleClass("shrunk", false);
-      draggedElement.toggleClass("draggable", false);
-      draggedElement.toggleClass("attached", true);
-      draggedElement.attr("draggable", false);
-      draggedElement.off(".dragdrop");
+      draggedElement
+        .toggleClass("shrunk", false)
+        .toggleClass("draggable", false)
+        .toggleClass("attached", true)
+        .toggleClass("most-recent-dragged", false)
+        .attr("draggable", false)
+        .off(".dragdrop");
     } else {
       draggedElement.toggleClass("shrunk", true);
     }
@@ -274,6 +281,23 @@ function onNecktieDropped(percentOffsetX, percentOffsetY) {
       && (percentOffsetX < necktieTargetPercentX[1])
       && (percentOffsetY > necktieTargetPercentY[0])
       && (percentOffsetY < necktieTargetPercentY[1])) {
+    makeShedinjaSpeak(true);
+    return true;
+  } else {
+    makeShedinjaSpeak(false);
+    return false;
+  }
+}
+
+const crocTargetPercentX = [-0.07, 0.025];
+const crocTargetPercentY = [0.35, 0.45];
+
+function onCrocDropped(percentOffsetX, percentOffsetY) {
+  console.log(percentOffsetX + ", " + percentOffsetY);
+  if ((percentOffsetX > crocTargetPercentX[0])
+      && (percentOffsetX < crocTargetPercentX[1])
+      && (percentOffsetY > crocTargetPercentY[0])
+      && (percentOffsetY < crocTargetPercentY[1])) {
     makeShedinjaSpeak(true);
     return true;
   } else {
