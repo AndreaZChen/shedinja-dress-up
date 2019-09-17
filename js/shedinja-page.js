@@ -4,6 +4,8 @@ function clamp(num, min, max) {
   return Math.max(min, Math.min(num, max));
 }
 
+var previousShedinjaWidth = null;
+var previousShedinjaHeight = null;
 function repositionShedinjaAndAccessories() {
   var shedinja = $("#shedinja");
   var accessories = $(".accessory");
@@ -11,21 +13,52 @@ function repositionShedinjaAndAccessories() {
   let shedinjaOldX = parseInt(shedinja.css("left"));
   let shedinjaOldY = parseInt(shedinja.css("top"));
 
-  shedinja
-    .css("left", (($(window).width() - shedinja.width()) / 2).toString() + "px")
-    .css("top", (($(window).height() - shedinja.height()) / 2).toString() + "px");
+  let shedinjaNewX = ($(window).width() - shedinja.width()) / 2;
+  let shedinjaNewY = ($(window).height() - shedinja.height()) / 2;
 
-  let diffX = parseInt(shedinja.css("left")) - shedinjaOldX;
-  let diffY = parseInt(shedinja.css("top")) - shedinjaOldY;
+  shedinja
+    .css("left", shedinjaNewX.toString() + "px")
+    .css("top", shedinjaNewY.toString() + "px");
+
+  let diffX = shedinjaNewX - shedinjaOldX;
+  let diffY = shedinjaNewY - shedinjaOldY;
+
+  let isWidthResized = previousShedinjaWidth !== null && previousShedinjaHeight !== null
+    && ((previousShedinjaWidth !== shedinja.width()) || (previousShedinjaHeight !== shedinja.height()));
 
   accessories.each(function () {
     let element = $(this);
     let elementOldX = parseInt(element.css("left"));
     let elementOldY = parseInt(element.css("top"));
-    element
-      .css("left", (elementOldX + diffX).toString() + "px")
-      .css("top", (elementOldY + diffY).toString() + "px");
+
+    if (isWidthResized) {
+      /* Shedinja grew fatter or thinner. Assume other elements resized by the same factor.
+        Calculate what their new distance from Shedinja should be. */
+      let fractionalXChange = shedinja.width() / previousShedinjaWidth;
+      let fractionalYChange = shedinja.height() / previousShedinjaHeight;
+
+      let elementOldDistanceX = elementOldX - shedinjaOldX;
+      let elementOldDistanceY = elementOldY - shedinjaOldY;
+
+      let elementNewDistanceX = elementOldDistanceX * fractionalXChange;
+      let elementNewDistanceY = elementOldDistanceY * fractionalYChange;
+
+      let elementNewX = shedinjaNewX + elementNewDistanceX;
+      let elementNewY = shedinjaNewY + elementNewDistanceY;
+
+      element
+        .css("left", elementNewX.toString() + "px")
+        .css("top", elementNewY.toString() + "px");
+    } else {
+      // Shedinja didn't grow fatter on thinner. Just translate along with it.
+      element
+        .css("left", (elementOldX + diffX).toString() + "px")
+        .css("top", (elementOldY + diffY).toString() + "px");
+    }
   });
+
+  previousShedinjaWidth = shedinja.width();
+  previousShedinjaHeight = shedinja.height();
 }
 
 repositionShedinjaAndAccessories();
