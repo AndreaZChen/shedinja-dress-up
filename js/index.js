@@ -76,4 +76,5 @@ preloadImages([
   "./assets/volume_active.svg",
   "./assets/shedinja.png",
   "./assets/tiara.png",
+  "./assets/necktie.png",
 ]);

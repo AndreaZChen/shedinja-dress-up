@@ -98,9 +98,6 @@ function onDrag (event) {
 $(document).on("mousemove.dragdrop", onDrag);
 $(document).on("touchmove.dragdrop", onDrag);
 
-const tiaraTargetPercentX = [-0.27, -0.1];
-const tiaraTargetPercentY = [-0.31, -0.15];
-
 const shedinjaPositiveDialogue = [
   "Thanks!",
   "Aw wow!",
@@ -148,7 +145,7 @@ function makeShedinjaSpeak (isHappy) {
   let topValue = shedinjaHeadY - Math.random() * shedinja.height() * 0.15;
 
   let newSpanElement = $(`
-    <span class="shedinja-spoken-words">${words}</span>
+    <span class="shedinja-spoken-words unselectable">${words}</span>
   `)
     .css("left", leftValue.toString() + "px")
     .css("top", topValue.toString() + "px");
@@ -186,6 +183,9 @@ function onDragEnd (event) {
     if (draggedElement.attr("id") === "tiara") {
       wasSuccessful = onTiaraDropped(percentOffsetX, percentOffsetY);
     }
+    else if (draggedElement.attr("id") === "necktie") {
+      wasSuccessful = onNecktieDropped(percentOffsetX, percentOffsetY);
+    }
 
     if (wasSuccessful) {
       draggedElement.toggleClass("shrunk", false);
@@ -206,11 +206,30 @@ function onDragEnd (event) {
 $(document).on("mouseup.dragdrop", onDragEnd);
 $(document).on("touchend.dragdrop", onDragEnd);
 
+const tiaraTargetPercentX = [-0.27, -0.1];
+const tiaraTargetPercentY = [-0.31, -0.15];
+
 function onTiaraDropped(percentOffsetX, percentOffsetY) {
   if ((percentOffsetX > tiaraTargetPercentX[0])
       && (percentOffsetX < tiaraTargetPercentX[1])
       && (percentOffsetY > tiaraTargetPercentY[0])
       && (percentOffsetY < tiaraTargetPercentY[1])) {
+    makeShedinjaSpeak(true);
+    return true;
+  } else {
+    makeShedinjaSpeak(false);
+    return false;
+  }
+}
+
+const necktieTargetPercentX = [-0.15, -0.03];
+const necktieTargetPercentY = [0.2, 0.3];
+
+function onNecktieDropped(percentOffsetX, percentOffsetY) {
+  if ((percentOffsetX > necktieTargetPercentX[0])
+      && (percentOffsetX < necktieTargetPercentX[1])
+      && (percentOffsetY > necktieTargetPercentY[0])
+      && (percentOffsetY < necktieTargetPercentY[1])) {
     makeShedinjaSpeak(true);
     return true;
   } else {
