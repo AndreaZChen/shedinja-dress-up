@@ -101,6 +101,14 @@
   .accessory.shrunk {
     transform: scale(0.75);
   }
+
+  #success-message {
+    font-size: 2em;
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 </style>
 
 <img draggable=false id="shedinja" class="animating unselectable" src="../assets/shedinja.png" ></img>
@@ -116,4 +124,7 @@
   class="accessory draggable shrunk unselectable"
   src="../assets/necktie.png"
 >
+<span id="success-message" style="display: none;">
+  You win!
+</span>
 </img>

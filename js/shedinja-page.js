@@ -240,6 +240,10 @@ function onDragEnd (event) {
     $(".attached.accessory").toggleClass("animating", true);
     shedinja.toggleClass("animating", true);
     draggedElement = null;
+
+    if ($(".accessory.draggable").length == 0) {
+      onAllAccessoriesAttached();
+    }
   }
 };
 
@@ -277,3 +281,7 @@ function onNecktieDropped(percentOffsetX, percentOffsetY) {
     return false;
   }
 }
+
+function onAllAccessoriesAttached() {
+  $("#success-message").show();
+};
