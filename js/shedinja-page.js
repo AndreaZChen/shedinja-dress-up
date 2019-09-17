@@ -46,6 +46,13 @@ function repositionShedinjaAndAccessories() {
       let elementNewX = shedinjaNewX + elementNewDistanceX;
       let elementNewY = shedinjaNewY + elementNewDistanceY;
 
+      let viewportWidth = $(window).width();
+      let viewportHeight = $(window).height();
+      let elementNewWidth = element.width();
+      let elementNewHeight = element.height();
+      elementNewX = clamp(elementNewX, 0, viewportWidth - elementNewWidth);
+      elementNewY = clamp(elementNewY, 0, viewportHeight - elementNewHeight);
+
       element
         .css("left", elementNewX.toString() + "px")
         .css("top", elementNewY.toString() + "px");
