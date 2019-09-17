@@ -9,27 +9,33 @@ $("#click-to-continue-text").on("click", function() {
 });
 
 var draggedElement = null;
-let currentOffsetX = 0;
-let currentOffsetY = 0;
-let currentDraggedItemX = 0;
-let currentDraggedItemY = 0;
+let initialOffsetX = 0;
+let initialOffsetY = 0;
+let initialDraggedItemX = 0;
+let initialDraggedItemY = 0;
 
-$(".draggable-accessory").on("mousedown", function(event) {
+function onStartDrag (event) {
+  console.log("onStartDrag event");
+  console.log(event);
+
   event.preventDefault();
   draggedElement = $(this);
 
-  currentOffsetX = event.clientX;
-  currentOffsetY = event.clientY;
+  initialOffsetX = event.clientX;
+  initialOffsetY = event.clientY;
 
-  currentDraggedItemX = parseInt(draggedElement.css("left"));
-  currentDraggedItemY = parseInt(draggedElement.css("top"));
-})
+  initialDraggedItemX = parseInt(draggedElement.css("left"));
+  initialDraggedItemY = parseInt(draggedElement.css("top"));
+};
+
+$(".draggable-accessory").on("mousedown", onStartDrag);
+$(".draggable-accessory").on("touchstart", onStartDrag);
 
 $(document).on("mousemove", function(event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
-    let newX = currentDraggedItemX + event.clientX - currentOffsetX;
-    let newY = currentDraggedItemY + event.clientY - currentOffsetY;
+    let newX = initialDraggedItemX + event.clientX - initialOffsetX;
+    let newY = initialDraggedItemY + event.clientY - initialOffsetY;
 
     let currentDraggedItemWidth = parseInt(draggedElement.css("width"));
     let currentDraggedItemHeight = parseInt(draggedElement.css("height"));
@@ -45,13 +51,95 @@ $(document).on("mousemove", function(event) {
   };
 })
 
+const tiaraTargetX = [-130, -50];
+const tiaraTargetY = [-150, -70];
+
+const shedinjaPositiveDialogue = [
+  "Thanks!",
+  "Aw wow!",
+  "I really appreciate that!",
+  "Cool!",
+  "Awesome!",
+  "That's really sweet of you!",
+  "I love it...",
+];
+
+const shedinjaNegativeDialogue = [
+  "Wrong spot...",
+  "Move it closer...",
+  "Can you try harder...?",
+  "Are you sure...?",
+  "That's not where that goes...",
+  "You're not supposed to put it there...",
+  "Move it better please...",
+];
+
+function makeShedinjaSpeak (isHappy) {
+  let words = "";
+  if (isHappy) {
+    let randomIndex = Math.floor(
+      Math.random() * shedinjaPositiveDialogue.length
+    );
+    words = shedinjaPositiveDialogue[randomIndex];
+  } else {
+    let randomIndex = Math.floor(
+      Math.random() * shedinjaNegativeDialogue.length
+    );
+    words = shedinjaNegativeDialogue[randomIndex];
+  };
+
+  let shedinja = $("#shedinja");
+  let shedinjaHeadX =
+    parseInt(shedinja.css("left"))
+    - 0.25 * shedinja.width();
+  let shedinjaHeadY =
+    parseInt(shedinja.css("top"))
+    - 0.5 * shedinja.height();
+
+  let leftValue = shedinjaHeadX + (Math.random() - 0.5) * 50;
+  let topValue = shedinjaHeadY + Math.random() * 70;
+
+  let newSpanElement = $(`
+    <span class="shedinja-spoken-words">${words}</span>
+  `)
+    .css("left", leftValue.toString() + "px")
+    .css("top", topValue.toString() + "px");
+
+  $("#app-content-display-area").append(newSpanElement);
+
+  newSpanElement.fadeOut(1500, function() {
+    newSpanElement.remove();
+  });
+}
+
 $(document).on("mouseup", function(event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
-    console.log("New left value");
-    console.log(draggedElement.css("left"));
-    console.log("New top value");
-    console.log(draggedElement.css("top"));
+
+    if (draggedElement.attr("id") === "tiara") {
+      // Check if sufficiently close to Shedinja's beautiful head
+      var shedinja = $("#shedinja");
+      let shedinjaX = parseInt(shedinja.css("left"));
+      let shedinjaY = parseInt(shedinja.css("top"));
+      let currentDraggedItemCenterX =
+        parseInt(draggedElement.css("left"))
+        + draggedElement.width() / 2;
+      let currentDraggedItemCenterY =
+        parseInt(draggedElement.css("top"))
+        + draggedElement.height() / 2;
+
+      if ((currentDraggedItemCenterX - shedinjaX > tiaraTargetX[0])
+          && (currentDraggedItemCenterX - shedinjaX < tiaraTargetX[1])
+          && (currentDraggedItemCenterY - shedinjaY > tiaraTargetY[0])
+          && (currentDraggedItemCenterY - shedinjaY < tiaraTargetY[1])) {
+        makeShedinjaSpeak(true);
+        // draggedElement.attr("draggable", false);
+        // draggedElement.toggleClass("draggable-accessory", false);
+      } else {
+        makeShedinjaSpeak(false);
+      }
+    }
+
     draggedElement = null;
   }
 })

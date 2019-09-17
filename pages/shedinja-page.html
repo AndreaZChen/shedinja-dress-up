@@ -1,20 +1,40 @@
 <style>
-  #shedinja-image {
+  #shedinja {
     position: absolute;
     top: 50%;
     left: 50%;
     height: 475px;
     width: 475px;
     transform: translateX(-50%) translateY(-50%);
+    z-index: -1;
   }
 
   #tiara {
     width: 300px;
     position: absolute;
   }
+
+  @keyframes rise-upwards {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100px);
+    }
+  }
+
+  .shedinja-spoken-words {
+    position: absolute;
+    animation: rise-upwards 2s linear;
+    border: 1px solid gray;
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    padding: 4px;
+  }
 </style>
 
-<img draggable=false id="shedinja-image" src="../assets/shedinja.png" ></img>
+<img draggable=false id="shedinja" src="../assets/shedinja.png" ></img>
 <img
   draggable=true
   id="tiara"
