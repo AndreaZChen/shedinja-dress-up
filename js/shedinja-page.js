@@ -293,7 +293,6 @@ const crocTargetPercentX = [-0.07, 0.025];
 const crocTargetPercentY = [0.35, 0.45];
 
 function onCrocDropped(percentOffsetX, percentOffsetY) {
-  console.log(percentOffsetX + ", " + percentOffsetY);
   if ((percentOffsetX > crocTargetPercentX[0])
       && (percentOffsetX < crocTargetPercentX[1])
       && (percentOffsetY > crocTargetPercentY[0])
