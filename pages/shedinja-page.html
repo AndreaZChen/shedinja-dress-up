@@ -4,19 +4,21 @@
     --tiara-width: 300px;
     --necktie-height: 150px;
     --croc-width: 100px;
+    --earring-height: 200px;
+    --blush-width: 300px;
   }
 
   @keyframes shedinja-vibrate {
     0% {
       transform: translateX(0) translateY(0);
     }
-    50%, 52%, 54%, 56%, 58%, 60% {
+    2%, 4%, 6%, 8%, 10% {
       transform: translateY(2px);
     }
-    51%, 53%, 55%, 57%, 59% {
+    1%, 3%, 5%, 7%, 9% {
       transform: translateY(-2px);
     }
-    61% {
+    11% {
       transform: translateY(0);
     }
     89% {
@@ -47,14 +49,14 @@
     width: var(--tiara-width);
     position: absolute;
     left: 25px;
-    top: calc(90% - 200px);
-    z-index: 2;
+    bottom: 25px;
+    z-index: 4;
   }
 
   #necktie {
     height: var(--necktie-height);
     position: absolute;
-    left: calc(100% - 175px);
+    right: 15px;
     top: 50%;
     z-index: 2;
   }
@@ -62,14 +64,40 @@
   #croc {
     width: var(--croc-width);
     position: absolute;
-    left: 75%;
     top: 10px;
+    right: 15px;
     z-index: 1;
+  }
+
+  #earring {
+    height: var(--earring-height);
+    position: absolute;
+    bottom: 25px;
+    right: 25px;
+    z-index: 4;
+  }
+
+  #blush {
+    width: var(--blush-width);
+    position: absolute;
+    left: 15px;
+    top: 100px;
+    z-index: 3;
+  }
+
+  #tiara.draggable,
+  #necktie.draggable,
+  #croc.draggable,
+  #earring.draggable,
+  #blush.draggable {
+    z-index: 50;
   }
 
   #tiara.most-recent-dragged,
   #necktie.most-recent-dragged,
-  #croc.most-recent-dragged {
+  #croc.most-recent-dragged,
+  #earring.most-recent-dragged,
+  #blush.most-recent-dragged {
     z-index: 100;
   }
 
@@ -95,6 +123,18 @@
       width: calc(var(--croc-width) / 2);
       left: 80%;
       top: 10px;
+    }
+
+    #earring {
+      height: calc(var(--earring-height) / 2);
+      bottom: 5px;
+      right: 5px;
+    }
+
+    #blush {
+      width: calc(var(--blush-width) / 2);
+      left: 15px;
+      top: 125px;
     }
   }
 
@@ -128,6 +168,7 @@
   }
 
   #success-message {
+    z-index: 200;
     white-space: nowrap;
     font-size: 2em;
     position: absolute;
@@ -161,6 +202,18 @@
   id="croc"
   class="accessory draggable shrunk unselectable"
   src="../assets/croc.png"
+>
+<img
+  draggable=true
+  id="earring"
+  class="accessory draggable shrunk unselectable"
+  src="../assets/earring.png"
+>
+<img
+  draggable=true
+  id="blush"
+  class="accessory draggable shrunk unselectable"
+  src="../assets/blush.png"
 >
 <span id="success-message" style="display: none;">
   Shedinja got dressed!

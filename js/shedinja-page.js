@@ -16,6 +16,9 @@ function repositionShedinjaAndAccessories() {
   let shedinjaNewX = ($(window).width() - shedinja.width()) / 2;
   let shedinjaNewY = ($(window).height() - shedinja.height()) / 2;
 
+  shedinjaNewX = Math.max(shedinjaNewX, 0);
+  shedinjaNewY = Math.max(shedinjaNewY, 0);
+
   shedinja
     .css("left", shedinjaNewX.toString() + "px")
     .css("top", shedinjaNewY.toString() + "px");
@@ -31,6 +34,8 @@ function repositionShedinjaAndAccessories() {
     let elementOldX = parseInt(element.css("left"));
     let elementOldY = parseInt(element.css("top"));
 
+    let elementNewX;
+    let elementNewY;
     if (isWidthResized) {
       /* Shedinja grew fatter or thinner. Assume other elements resized by the same factor.
         Calculate what their new distance from Shedinja should be. */
@@ -43,25 +48,26 @@ function repositionShedinjaAndAccessories() {
       let elementNewDistanceX = elementOldDistanceX * fractionalXChange;
       let elementNewDistanceY = elementOldDistanceY * fractionalYChange;
 
-      let elementNewX = shedinjaNewX + elementNewDistanceX;
-      let elementNewY = shedinjaNewY + elementNewDistanceY;
+      elementNewX = shedinjaNewX + elementNewDistanceX;
+      elementNewY = shedinjaNewY + elementNewDistanceY;
+    } else {
+      elementNewX = elementOldX + diffX;
+      elementNewY = elementOldY + diffY;
+    }
 
+    if (element.hasClass("draggable")) {
+      // Draggable elements must be clamped to the viewport
       let viewportWidth = $(window).width();
       let viewportHeight = $(window).height();
       let elementNewWidth = element.width();
       let elementNewHeight = element.height();
-      elementNewX = clamp(elementNewX, 0, viewportWidth - elementNewWidth);
-      elementNewY = clamp(elementNewY, 0, viewportHeight - elementNewHeight);
-
-      element
-        .css("left", elementNewX.toString() + "px")
-        .css("top", elementNewY.toString() + "px");
-    } else {
-      // Shedinja didn't grow fatter on thinner. Just translate along with it.
-      element
-        .css("left", (elementOldX + diffX).toString() + "px")
-        .css("top", (elementOldY + diffY).toString() + "px");
+      elementNewX = clamp(elementNewX, -elementNewWidth / 2, viewportWidth - elementNewWidth / 2);
+      elementNewY = clamp(elementNewY, -elementNewHeight / 2, viewportHeight - elementNewHeight / 2);
     }
+
+    element
+      .css("left", elementNewX.toString() + "px")
+      .css("top", elementNewY.toString() + "px");
   });
 
   previousShedinjaWidth = shedinja.width();
@@ -128,8 +134,8 @@ function onDrag (event) {
     let viewportWidth = $(window).width();
     let viewportHeight = $(window).height();
 
-    newX = clamp(newX, 0, viewportWidth - currentDraggedItemWidth);
-    newY = clamp(newY, 0, viewportHeight - currentDraggedItemHeight);
+    newX = clamp(newX, -currentDraggedItemWidth / 2, viewportWidth - currentDraggedItemWidth / 2);
+    newY = clamp(newY, -currentDraggedItemHeight / 2, viewportHeight - currentDraggedItemHeight / 2);
 
     draggedElement
       .css("left", newX.toString() + "px")
@@ -160,19 +166,12 @@ const shedinjaNegativeDialogue = [
   "Move it better please...",
 ];
 
-function makeShedinjaSpeak (isHappy) {
+function makeShedinjaSpeak (dialogueList) {
   let words = "";
-  if (isHappy) {
-    let randomIndex = Math.floor(
-      Math.random() * shedinjaPositiveDialogue.length
-    );
-    words = shedinjaPositiveDialogue[randomIndex];
-  } else {
-    let randomIndex = Math.floor(
-      Math.random() * shedinjaNegativeDialogue.length
-    );
-    words = shedinjaNegativeDialogue[randomIndex];
-  };
+  let randomIndex = Math.floor(
+    Math.random() * dialogueList.length
+  );
+  words = dialogueList[randomIndex];
 
   let shedinja = $("#shedinja");
   let shedinjaHeadX =
@@ -231,6 +230,12 @@ function onDragEnd (event) {
     else if (draggedElement.attr("id") === "croc") {
       wasSuccessful = onCrocDropped(percentOffsetX, percentOffsetY);
     }
+    else if (draggedElement.attr("id") === "earring") {
+      wasSuccessful = onEarringDropped(percentOffsetX, percentOffsetY);
+    }
+    else if (draggedElement.attr("id") === "blush") {
+      wasSuccessful = onBlushDropped(percentOffsetX, percentOffsetY);
+    }
 
     if (wasSuccessful) {
       draggedElement
@@ -265,10 +270,10 @@ function onTiaraDropped(percentOffsetX, percentOffsetY) {
       && (percentOffsetX < tiaraTargetPercentX[1])
       && (percentOffsetY > tiaraTargetPercentY[0])
       && (percentOffsetY < tiaraTargetPercentY[1])) {
-    makeShedinjaSpeak(true);
+    makeShedinjaSpeak(shedinjaPositiveDialogue);
     return true;
   } else {
-    makeShedinjaSpeak(false);
+    makeShedinjaSpeak(shedinjaNegativeDialogue);
     return false;
   }
 }
@@ -281,10 +286,10 @@ function onNecktieDropped(percentOffsetX, percentOffsetY) {
       && (percentOffsetX < necktieTargetPercentX[1])
       && (percentOffsetY > necktieTargetPercentY[0])
       && (percentOffsetY < necktieTargetPercentY[1])) {
-    makeShedinjaSpeak(true);
+    makeShedinjaSpeak(shedinjaPositiveDialogue);
     return true;
   } else {
-    makeShedinjaSpeak(false);
+    makeShedinjaSpeak(shedinjaNegativeDialogue);
     return false;
   }
 }
@@ -297,10 +302,59 @@ function onCrocDropped(percentOffsetX, percentOffsetY) {
       && (percentOffsetX < crocTargetPercentX[1])
       && (percentOffsetY > crocTargetPercentY[0])
       && (percentOffsetY < crocTargetPercentY[1])) {
-    makeShedinjaSpeak(true);
+    makeShedinjaSpeak(shedinjaPositiveDialogue);
     return true;
   } else {
-    makeShedinjaSpeak(false);
+    makeShedinjaSpeak(shedinjaNegativeDialogue);
+    return false;
+  }
+}
+
+const earringTargetPercentX = [0.36, 0.43];
+const earringTargetPercentY = [0.062, 0.127];
+
+function onEarringDropped(percentOffsetX, percentOffsetY) {
+  if ((percentOffsetX > earringTargetPercentX[0])
+      && (percentOffsetX < earringTargetPercentX[1])
+      && (percentOffsetY > earringTargetPercentY[0])
+      && (percentOffsetY < earringTargetPercentY[1])) {
+    makeShedinjaSpeak(shedinjaPositiveDialogue);
+    return true;
+  } else {
+    makeShedinjaSpeak(shedinjaNegativeDialogue);
+    return false;
+  }
+}
+
+const shedinjaCrushDialogue = [
+  "O-oh my...",
+  "Is this...?",
+  "How intimate...",
+  "I feel pretty...",
+  "Am I cute now...?",
+];
+
+const shedinjaEmbarrassedDialogue = [
+  "Huh!?",
+  "That's n-not the right spot!",
+  "...",
+  "That's not the sweet spot...",
+  "Please try that again...",
+  "...!?",
+];
+
+const blushTargetPercentX = [-0.25, -0.2];
+const blushTargetPercentY = [0.022, 0.068];
+
+function onBlushDropped(percentOffsetX, percentOffsetY) {
+  if ((percentOffsetX > blushTargetPercentX[0])
+      && (percentOffsetX < blushTargetPercentX[1])
+      && (percentOffsetY > blushTargetPercentY[0])
+      && (percentOffsetY < blushTargetPercentY[1])) {
+    makeShedinjaSpeak(shedinjaCrushDialogue);
+    return true;
+  } else {
+    makeShedinjaSpeak(shedinjaEmbarrassedDialogue);
     return false;
   }
 }

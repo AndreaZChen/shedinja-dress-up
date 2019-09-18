@@ -78,4 +78,6 @@ preloadImages([
   "./assets/tiara.png",
   "./assets/necktie.png",
   "./assets/croc.png",
+  "./assets/earring.png",
+  "./assets/blush.png",
 ]);
