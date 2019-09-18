@@ -156,14 +156,42 @@ const shedinjaPositiveDialogue = [
   "I love it...",
 ];
 
-const shedinjaNegativeDialogue = [
-  "Wrong spot...",
-  "Move it somewhere else...",
-  "Can you try harder...?",
-  "Are you sure...?",
-  "That's not where that goes...",
-  "You're not supposed to put it there...",
-  "Move it better please...",
+const shedinjaCrushDialogue = [
+  "O-oh my...",
+  "Is this...?",
+  "How intimate...",
+  "I feel pretty...",
+  "Am I cute now...?",
+];
+
+const shedinjaGoLeftDialogue = [
+  "Try more left...",
+  "Too far right...",
+  "That's wrong...",
+  "Not the right spot...",
+  "More to the left...",
+];
+
+const shedinjaGoRightDialogue = [
+  "Try more to the right...",
+  "Too far left...",
+  "That's not the sweet spot...",
+  "Can't you do better...?",
+  "More to the right...",
+];
+
+const shedinjaGoUpDialogue = [
+  "Needs to go higher up...",
+  "Try higher up...",
+  "Not there...",
+  "Too far down...",
+];
+
+const shedinjaGoDownDialogue = [
+  "Put it further down...",
+  "Not so high up...",
+  "That's not it...",
+  "Try again...!",
 ];
 
 function makeShedinjaSpeak (dialogueList) {
@@ -198,6 +226,21 @@ function makeShedinjaSpeak (dialogueList) {
   });
 }
 
+const tiaraTargetPercentX = [-0.27, -0.1];
+const tiaraTargetPercentY = [-0.31, -0.15];
+
+const necktieTargetPercentX = [-0.15, -0.03];
+const necktieTargetPercentY = [0.2, 0.3];
+
+const crocTargetPercentX = [-0.07, 0.025];
+const crocTargetPercentY = [0.35, 0.45];
+
+const earringTargetPercentX = [0.36, 0.43];
+const earringTargetPercentY = [0.062, 0.127];
+
+const blushTargetPercentX = [-0.25, -0.2];
+const blushTargetPercentY = [0.022, 0.068];
+
 function onDragEnd (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
@@ -222,19 +265,49 @@ function onDragEnd (event) {
 
     let wasSuccessful;
     if (draggedElement.attr("id") === "tiara") {
-      wasSuccessful = onTiaraDropped(percentOffsetX, percentOffsetY);
+      wasSuccessful = onItemDropped(
+        percentOffsetX,
+        percentOffsetY,
+        tiaraTargetPercentX,
+        tiaraTargetPercentY,
+        shedinjaPositiveDialogue,
+      );
     }
     else if (draggedElement.attr("id") === "necktie") {
-      wasSuccessful = onNecktieDropped(percentOffsetX, percentOffsetY);
+      wasSuccessful = onItemDropped(
+        percentOffsetX,
+        percentOffsetY,
+        necktieTargetPercentX,
+        necktieTargetPercentY,
+        shedinjaPositiveDialogue,
+      );
     }
     else if (draggedElement.attr("id") === "croc") {
-      wasSuccessful = onCrocDropped(percentOffsetX, percentOffsetY);
+      wasSuccessful = onItemDropped(
+        percentOffsetX,
+        percentOffsetY,
+        crocTargetPercentX,
+        crocTargetPercentY,
+        shedinjaPositiveDialogue,
+      );
     }
     else if (draggedElement.attr("id") === "earring") {
-      wasSuccessful = onEarringDropped(percentOffsetX, percentOffsetY);
+      wasSuccessful = onItemDropped(
+        percentOffsetX,
+        percentOffsetY,
+        earringTargetPercentX,
+        earringTargetPercentY,
+        shedinjaPositiveDialogue,
+      );
     }
     else if (draggedElement.attr("id") === "blush") {
-      wasSuccessful = onBlushDropped(percentOffsetX, percentOffsetY);
+      wasSuccessful = onItemDropped(
+        percentOffsetX,
+        percentOffsetY,
+        blushTargetPercentX,
+        blushTargetPercentY,
+        shedinjaCrushDialogue,
+      );
     }
 
     if (wasSuccessful) {
@@ -262,100 +335,26 @@ function onDragEnd (event) {
 $(document).on("mouseup.dragdrop", onDragEnd);
 $(document).on("touchend.dragdrop", onDragEnd);
 
-const tiaraTargetPercentX = [-0.27, -0.1];
-const tiaraTargetPercentY = [-0.31, -0.15];
-
-function onTiaraDropped(percentOffsetX, percentOffsetY) {
-  if ((percentOffsetX > tiaraTargetPercentX[0])
-      && (percentOffsetX < tiaraTargetPercentX[1])
-      && (percentOffsetY > tiaraTargetPercentY[0])
-      && (percentOffsetY < tiaraTargetPercentY[1])) {
-    makeShedinjaSpeak(shedinjaPositiveDialogue);
-    return true;
-  } else {
-    makeShedinjaSpeak(shedinjaNegativeDialogue);
+function onItemDropped(percentOffsetX, percentOffsetY, targetXArray, targetYArray, successDialogue) {
+  if (percentOffsetX < targetXArray[0]) {
+    makeShedinjaSpeak(shedinjaGoRightDialogue);
     return false;
   }
-}
-
-const necktieTargetPercentX = [-0.15, -0.03];
-const necktieTargetPercentY = [0.2, 0.3];
-
-function onNecktieDropped(percentOffsetX, percentOffsetY) {
-  if ((percentOffsetX > necktieTargetPercentX[0])
-      && (percentOffsetX < necktieTargetPercentX[1])
-      && (percentOffsetY > necktieTargetPercentY[0])
-      && (percentOffsetY < necktieTargetPercentY[1])) {
-    makeShedinjaSpeak(shedinjaPositiveDialogue);
-    return true;
-  } else {
-    makeShedinjaSpeak(shedinjaNegativeDialogue);
+  else if (percentOffsetX > targetXArray[1]) {
+    makeShedinjaSpeak(shedinjaGoLeftDialogue);
     return false;
   }
-}
-
-const crocTargetPercentX = [-0.07, 0.025];
-const crocTargetPercentY = [0.35, 0.45];
-
-function onCrocDropped(percentOffsetX, percentOffsetY) {
-  if ((percentOffsetX > crocTargetPercentX[0])
-      && (percentOffsetX < crocTargetPercentX[1])
-      && (percentOffsetY > crocTargetPercentY[0])
-      && (percentOffsetY < crocTargetPercentY[1])) {
-    makeShedinjaSpeak(shedinjaPositiveDialogue);
-    return true;
-  } else {
-    makeShedinjaSpeak(shedinjaNegativeDialogue);
+  else if (percentOffsetY < targetYArray[0]) {
+    makeShedinjaSpeak(shedinjaGoDownDialogue);
     return false;
   }
-}
-
-const earringTargetPercentX = [0.36, 0.43];
-const earringTargetPercentY = [0.062, 0.127];
-
-function onEarringDropped(percentOffsetX, percentOffsetY) {
-  if ((percentOffsetX > earringTargetPercentX[0])
-      && (percentOffsetX < earringTargetPercentX[1])
-      && (percentOffsetY > earringTargetPercentY[0])
-      && (percentOffsetY < earringTargetPercentY[1])) {
-    makeShedinjaSpeak(shedinjaPositiveDialogue);
-    return true;
-  } else {
-    makeShedinjaSpeak(shedinjaNegativeDialogue);
+  else if (percentOffsetY > targetYArray[1]) {
+    makeShedinjaSpeak(shedinjaGoUpDialogue);
     return false;
   }
-}
-
-const shedinjaCrushDialogue = [
-  "O-oh my...",
-  "Is this...?",
-  "How intimate...",
-  "I feel pretty...",
-  "Am I cute now...?",
-];
-
-const shedinjaEmbarrassedDialogue = [
-  "Huh!?",
-  "That's n-not the right spot!",
-  "...",
-  "That's not the sweet spot...",
-  "Please try that again...",
-  "...!?",
-];
-
-const blushTargetPercentX = [-0.25, -0.2];
-const blushTargetPercentY = [0.022, 0.068];
-
-function onBlushDropped(percentOffsetX, percentOffsetY) {
-  if ((percentOffsetX > blushTargetPercentX[0])
-      && (percentOffsetX < blushTargetPercentX[1])
-      && (percentOffsetY > blushTargetPercentY[0])
-      && (percentOffsetY < blushTargetPercentY[1])) {
-    makeShedinjaSpeak(shedinjaCrushDialogue);
+  else {
+    makeShedinjaSpeak(successDialogue);
     return true;
-  } else {
-    makeShedinjaSpeak(shedinjaEmbarrassedDialogue);
-    return false;
   }
 }
 
