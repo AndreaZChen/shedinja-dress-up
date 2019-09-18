@@ -3,6 +3,7 @@
     --shedinja-height-and-width: 475px;
     --tiara-width: 300px;
     --necktie-height: 150px;
+    --croc-width: 100px;
   }
 
   @keyframes shedinja-vibrate {
@@ -47,6 +48,29 @@
     position: absolute;
     left: 25px;
     top: calc(90% - 200px);
+    z-index: 2;
+  }
+
+  #necktie {
+    height: var(--necktie-height);
+    position: absolute;
+    left: calc(100% - 175px);
+    top: 50%;
+    z-index: 2;
+  }
+
+  #croc {
+    width: var(--croc-width);
+    position: absolute;
+    left: 75%;
+    top: 10px;
+    z-index: 1;
+  }
+
+  #tiara.most-recent-dragged,
+  #necktie.most-recent-dragged,
+  #croc.most-recent-dragged {
+    z-index: 100;
   }
 
   #necktie {
@@ -73,6 +97,12 @@
       left: calc(100% - 90px);
       top: 50%;
     }
+
+    #croc {
+      width: calc(var(--croc-width) / 2);
+      left: 80%;
+      top: 10px;
+    }
   }
 
   @keyframes rise-upwards {
@@ -92,6 +122,8 @@
     color: black;
     border-radius: 10px;
     padding: 4px;
+    z-index: 200;
+    pointer-events: none;
   }
 
   .accessory {
@@ -100,6 +132,21 @@
 
   .accessory.shrunk {
     transform: scale(0.75);
+  }
+
+  #success-message {
+    white-space: nowrap;
+    font-size: 2em;
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  @media (max-width : 500px) {
+    #success-message {
+      font-size: 1.5em;
+    }
   }
 </style>
 
@@ -116,4 +163,13 @@
   class="accessory draggable shrunk unselectable"
   src="../assets/necktie.png"
 >
+<img
+  draggable=true
+  id="croc"
+  class="accessory draggable shrunk unselectable"
+  src="../assets/croc.png"
+>
+<span id="success-message" style="display: none;">
+  Shedinja got dressed!
+</span>
 </img>

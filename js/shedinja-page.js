@@ -4,28 +4,68 @@ function clamp(num, min, max) {
   return Math.max(min, Math.min(num, max));
 }
 
+var previousShedinjaWidth = null;
+var previousShedinjaHeight = null;
 function repositionShedinjaAndAccessories() {
-  var shedinja = $("#shedinja");
-  var accessories = $(".accessory");
+  let shedinja = $("#shedinja");
+  let accessories = $(".accessory");
 
   let shedinjaOldX = parseInt(shedinja.css("left"));
   let shedinjaOldY = parseInt(shedinja.css("top"));
 
-  shedinja
-    .css("left", (($(window).width() - shedinja.width()) / 2).toString() + "px")
-    .css("top", (($(window).height() - shedinja.height()) / 2).toString() + "px");
+  let shedinjaNewX = ($(window).width() - shedinja.width()) / 2;
+  let shedinjaNewY = ($(window).height() - shedinja.height()) / 2;
 
-  let diffX = parseInt(shedinja.css("left")) - shedinjaOldX;
-  let diffY = parseInt(shedinja.css("top")) - shedinjaOldY;
+  shedinja
+    .css("left", shedinjaNewX.toString() + "px")
+    .css("top", shedinjaNewY.toString() + "px");
+
+  let diffX = shedinjaNewX - shedinjaOldX;
+  let diffY = shedinjaNewY - shedinjaOldY;
+
+  let isWidthResized = previousShedinjaWidth !== null && previousShedinjaHeight !== null
+    && ((previousShedinjaWidth !== shedinja.width()) || (previousShedinjaHeight !== shedinja.height()));
 
   accessories.each(function () {
     let element = $(this);
     let elementOldX = parseInt(element.css("left"));
     let elementOldY = parseInt(element.css("top"));
-    element
-      .css("left", (elementOldX + diffX).toString() + "px")
-      .css("top", (elementOldY + diffY).toString() + "px");
+
+    if (isWidthResized) {
+      /* Shedinja grew fatter or thinner. Assume other elements resized by the same factor.
+        Calculate what their new distance from Shedinja should be. */
+      let fractionalXChange = shedinja.width() / previousShedinjaWidth;
+      let fractionalYChange = shedinja.height() / previousShedinjaHeight;
+
+      let elementOldDistanceX = elementOldX - shedinjaOldX;
+      let elementOldDistanceY = elementOldY - shedinjaOldY;
+
+      let elementNewDistanceX = elementOldDistanceX * fractionalXChange;
+      let elementNewDistanceY = elementOldDistanceY * fractionalYChange;
+
+      let elementNewX = shedinjaNewX + elementNewDistanceX;
+      let elementNewY = shedinjaNewY + elementNewDistanceY;
+
+      let viewportWidth = $(window).width();
+      let viewportHeight = $(window).height();
+      let elementNewWidth = element.width();
+      let elementNewHeight = element.height();
+      elementNewX = clamp(elementNewX, 0, viewportWidth - elementNewWidth);
+      elementNewY = clamp(elementNewY, 0, viewportHeight - elementNewHeight);
+
+      element
+        .css("left", elementNewX.toString() + "px")
+        .css("top", elementNewY.toString() + "px");
+    } else {
+      // Shedinja didn't grow fatter on thinner. Just translate along with it.
+      element
+        .css("left", (elementOldX + diffX).toString() + "px")
+        .css("top", (elementOldY + diffY).toString() + "px");
+    }
   });
+
+  previousShedinjaWidth = shedinja.width();
+  previousShedinjaHeight = shedinja.height();
 }
 
 repositionShedinjaAndAccessories();
@@ -37,15 +77,17 @@ $("#click-to-continue-text").on("click", function() {
 });
 
 var draggedElement = null;
-let initialOffsetX = 0;
-let initialOffsetY = 0;
-let initialDraggedItemX = 0;
-let initialDraggedItemY = 0;
+var initialOffsetX = 0;
+var initialOffsetY = 0;
+var initialDraggedItemX = 0;
+var initialDraggedItemY = 0;
 
 function onStartDrag (event) {
   event.preventDefault();
   draggedElement = $(this);
   draggedElement.toggleClass("shrunk", false);
+  $(".most-recent-dragged").toggleClass("most-recent-dragged", false);
+  draggedElement.toggleClass("most-recent-dragged", true);
 
   $(".attached.accessory").toggleClass("animating", false);
   $("#shedinja").toggleClass("animating", false);
@@ -68,8 +110,8 @@ $(".draggable.accessory").on("touchstart.dragdrop", onStartDrag);
 function onDrag (event) {
   if (draggedElement !== null && draggedElement !== undefined) {
     event.preventDefault();
-    var eventX;
-    var eventY;
+    let eventX;
+    let eventY;
     if (event.touches) {
       eventX = event.touches[0].clientX;
       eventY = event.touches[0].clientY;
@@ -162,7 +204,7 @@ function onDragEnd (event) {
     event.preventDefault();
 
     // Check if sufficiently close to Shedinja's beautiful head
-    var shedinja = $("#shedinja");
+    let shedinja = $("#shedinja");
     let shedinjaCenterX =
       parseInt(shedinja.css("left"))
       + shedinja.width() / 2;
@@ -179,20 +221,25 @@ function onDragEnd (event) {
     let percentOffsetX = (currentDraggedItemCenterX - shedinjaCenterX) / shedinja.width();
     let percentOffsetY = (currentDraggedItemCenterY - shedinjaCenterY) / shedinja.height();
 
-    var wasSuccessful;
+    let wasSuccessful;
     if (draggedElement.attr("id") === "tiara") {
       wasSuccessful = onTiaraDropped(percentOffsetX, percentOffsetY);
     }
     else if (draggedElement.attr("id") === "necktie") {
       wasSuccessful = onNecktieDropped(percentOffsetX, percentOffsetY);
     }
+    else if (draggedElement.attr("id") === "croc") {
+      wasSuccessful = onCrocDropped(percentOffsetX, percentOffsetY);
+    }
 
     if (wasSuccessful) {
-      draggedElement.toggleClass("shrunk", false);
-      draggedElement.toggleClass("draggable", false);
-      draggedElement.toggleClass("attached", true);
-      draggedElement.attr("draggable", false);
-      draggedElement.off(".dragdrop");
+      draggedElement
+        .toggleClass("shrunk", false)
+        .toggleClass("draggable", false)
+        .toggleClass("attached", true)
+        .toggleClass("most-recent-dragged", false)
+        .attr("draggable", false)
+        .off(".dragdrop");
     } else {
       draggedElement.toggleClass("shrunk", true);
     }
@@ -200,6 +247,10 @@ function onDragEnd (event) {
     $(".attached.accessory").toggleClass("animating", true);
     shedinja.toggleClass("animating", true);
     draggedElement = null;
+
+    if ($(".accessory.draggable").length == 0) {
+      onAllAccessoriesAttached();
+    }
   }
 };
 
@@ -237,3 +288,24 @@ function onNecktieDropped(percentOffsetX, percentOffsetY) {
     return false;
   }
 }
+
+const crocTargetPercentX = [-0.07, 0.025];
+const crocTargetPercentY = [0.35, 0.45];
+
+function onCrocDropped(percentOffsetX, percentOffsetY) {
+  console.log(percentOffsetX + ", " + percentOffsetY);
+  if ((percentOffsetX > crocTargetPercentX[0])
+      && (percentOffsetX < crocTargetPercentX[1])
+      && (percentOffsetY > crocTargetPercentY[0])
+      && (percentOffsetY < crocTargetPercentY[1])) {
+    makeShedinjaSpeak(true);
+    return true;
+  } else {
+    makeShedinjaSpeak(false);
+    return false;
+  }
+}
+
+function onAllAccessoriesAttached() {
+  $("#success-message").show();
+};
